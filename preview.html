@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Clawd — preview</title>
+<style>
+  :root { --orange:#d97757; --bg:#141414; --card:#1e1e1e; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:#eee; font:16px/1.5 system-ui,Segoe UI,DejaVu Sans,sans-serif; }
+  header { padding:48px 24px 24px; text-align:center; }
+  h1 { margin:0; font-size:40px; color:var(--orange); letter-spacing:-1px; }
+  header p { color:#aaa; margin:8px 0 0; }
+  .wrap { max-width:900px; margin:0 auto; padding:0 24px 64px; }
+  .shot { display:flex; justify-content:center; margin:24px 0 8px; }
+  .shot img { width:300px; image-rendering:pixelated; filter: drop-shadow(0 10px 30px rgba(217,119,87,.25)); }
+  table { width:100%; border-collapse:collapse; margin:24px 0; background:var(--card); border-radius:12px; overflow:hidden; }
+  th,td { padding:12px 16px; text-align:left; border-bottom:1px solid #2b2b2b; }
+  th { background:#262626; color:var(--orange); }
+  code { background:#262626; padding:2px 6px; border-radius:6px; color:var(--orange); }
+  .pill { display:inline-block; background:var(--orange); color:#141414; font-weight:700; padding:2px 10px; border-radius:999px; font-size:13px; }
+  ul { line-height:1.9; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Clawd</h1>
+  <p>La mascota de Claude Code, viva en tu escritorio · <span class="pill">live preview</span></p>
+</header>
+<div class="wrap">
+  <div class="shot"><img src="clawd-official.png" alt="Clawd oficial"></div>
+
+  <h2>Requisitos reales</h2>
+  <table>
+    <tr><th>Recurso</th><th>Consumo</th><th>Cuándo</th></tr>
+    <tr><td>Código</td><td><b>20 KB</b></td><td>un archivo Python</td></tr>
+    <tr><td>RAM mascota</td><td><b>~8 MB</b> · pico ~47 MB</td><td>siempre abierta</td></tr>
+    <tr><td>RAM del modelo</td><td><b>0.4–4.7 GB</b></td><td>solo mientras chateas (se descarga a los 30 s)</td></tr>
+    <tr><td>Disco modelo</td><td>0.4 GB (0.5b) → 4.7 GB (7b)</td><td>opcional, elegible</td></tr>
+  </table>
+
+  <h2>Modelo sugerido según tu RAM</h2>
+  <table>
+    <tr><th>RAM total</th><th>Modelo</th><th>Uso</th></tr>
+    <tr><td>&lt; 6 GB</td><td>qwen2.5:0.5b</td><td>~0.4 GB</td></tr>
+    <tr><td>6–12 GB</td><td>qwen2.5:1.5b</td><td>~1.0 GB</td></tr>
+    <tr><td>cualquiera</td><td>qwen2.5:3b</td><td>~2.0 GB</td></tr>
+    <tr><td>12–20 GB</td><td>gemma3:4b</td><td>~3.3 GB</td></tr>
+    <tr><td>&gt; 20 GB</td><td>qwen2.5:7b</td><td>~4.7 GB</td></tr>
+  </table>
+
+  <h2>Qué hace</h2>
+  <ul>
+    <li>Se <b>sienta a teclear</b> en la laptop cuando trabajas.</li>
+    <li><b>Duerme</b> (z z z) si no usas la PC; <b>audífonos</b> si hay música.</li>
+    <li>Reacciona si la <b>acarician</b>, la <b>mueven</b> o la sueltan.</li>
+    <li>Habla con un <b>modelo local</b> (Ollama), con memoria de la charla.</li>
+    <li><code>abre youtube</code>, <code>busca gatos</code>, volumen, captura… y <code>! orden</code> para el agente.</li>
+  </ul>
+
+  <h2>Instalar</h2>
+  <pre><code>git clone &lt;repo&gt; &amp;&amp; cd clawd-desktop &amp;&amp; ./install.sh</code></pre>
+  <p style="color:#aaa">El instalador abre un menú: comprueba dependencias, detecta/instala Ollama, te recomienda modelo según tu RAM y la deja corriendo.</p>
+</div>
+</body>
+</html>
