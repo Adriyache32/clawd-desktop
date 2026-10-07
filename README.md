@@ -24,11 +24,13 @@ El instalador la calcula sola:
 
 | RAM total | Modelo sugerido | RAM en uso |
 |---|---|---|
-| menos de 6 GB | `qwen2.5:0.5b` | ~0.4 GB |
-| 6–12 GB | `qwen2.5:1.5b` | ~1.0 GB |
-| 12–20 GB | `qwen2.5:3b` | ~2.0 GB |
-| más de 20 GB | `gemma3:4b` | ~3.3 GB |
-| equipo potente | `qwen2.5:7b` | ~4.7 GB |
+| RAM típica | Modelo | RAM en uso | Inteligencia |
+|---|---|---|---|
+| menos de 6 GB | `qwen2.5:0.5b` | ~0.4 GB | ★☆☆☆☆ muy básico |
+| 6–12 GB | `qwen2.5:1.5b` | ~1.0 GB | ★★☆☆☆ básico |
+| 12–20 GB | `qwen2.5:3b` | ~2.0 GB | ★★★☆☆ aceptable |
+| más de 20 GB | `gemma3:4b` | ~3.3 GB | ★★★★☆ bueno |
+| equipo potente | `qwen2.5:7b` | ~4.7 GB | ★★★★★ muy bueno |
 
 > El modelo **no se queda en RAM**: Ollama lo descarga 30 s después de la última respuesta, así que puedes jugar o trabajar sin que ocupe memoria.
 

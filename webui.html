@@ -26,6 +26,9 @@
   .m.sel{border-color:var(--o);box-shadow:0 0 0 3px rgba(217,119,87,.18)}
   .m .n{font-weight:700}
   .m .r{color:var(--mut);font-size:13px;margin-top:4px}
+  .m .i{font-size:11.5px;color:var(--mut);margin-top:8px;letter-spacing:.02em}
+  .m .i b{color:var(--o);font-weight:700}
+  .m .i span{color:#787f89}
   .m .rec{display:inline-block;background:var(--o);color:#111;font-size:11px;font-weight:800;border-radius:999px;padding:1px 8px;margin-top:8px}
   .row{display:flex;flex-wrap:wrap;gap:12px;margin-top:16px}
   button{background:var(--card);color:var(--txt);border:1px solid var(--line);border-radius:12px;padding:12px 18px;font-size:15px;
@@ -76,8 +79,12 @@
 </div>
 
 <script>
-const MODELS=[["qwen2.5:0.5b","~0.4 GB","mínimo"],["qwen2.5:1.5b","~1.0 GB","equilibrado"],
-  ["qwen2.5:3b","~2.0 GB","buena calidad"],["gemma3:4b","~3.3 GB","más listo"],["qwen2.5:7b","~4.7 GB","el más capaz"]];
+const MODELS=[
+  ["qwen2.5:0.5b","~0.4 GB","mínimo",1,"muy básico"],
+  ["qwen2.5:1.5b","~1.0 GB","equilibrado",2,"básico"],
+  ["qwen2.5:3b","~2.0 GB","buena calidad",3,"aceptable"],
+  ["gemma3:4b","~3.3 GB","más listo",4,"bueno"],
+  ["qwen2.5:7b","~4.7 GB","el más capaz",5,"muy bueno"]];
 let sel="qwen2.5:1.5b", st={};
 const log=(m)=>{document.getElementById('log').textContent=m;};
 const busy=(m)=>{document.getElementById('log').innerHTML='<span class="sp"></span>'+m;};
@@ -90,11 +97,13 @@ async function refresh(){
     <div class="card"><h3>Dependencias</h3><div class="v ${st.deps_ok?'ok':'bad'}">${st.deps_ok?'OK':'faltan'}</div></div>
     <div class="card"><h3>Ollama</h3><div class="v ${st.ollama?'ok':'bad'}">${st.ollama?'instalado':'no'}</div></div>
     <div class="card"><h3>Clawd</h3><div class="v ${st.service==='active'?'ok':''}">${st.service}</div></div>`;
-  document.getElementById('models').innerHTML=MODELS.map(([id,ram,q])=>{
+  document.getElementById('models').innerHTML=MODELS.map(([id,ram,q,iq,lbl])=>{
     const rec=id===st.recommend?'<div class="rec">recomendado</div>':'';
     const has=st.models.includes(id)?' ✓':'';
+    const stars='★'.repeat(iq)+'☆'.repeat(5-iq);
     return `<div class="m ${id===sel?'sel':''}" onclick="pick('${id}')"><div class="n">${id}${has}</div>
-            <div class="r">${ram} RAM · ${q}</div>${rec}</div>`;
+            <div class="r">${ram} RAM · ${q}</div>
+            <div class="i">inteligencia <b>${stars}</b> <span>${lbl}</span></div>${rec}</div>`;
   }).join('');
 }
 function pick(id){sel=id;refresh();}
