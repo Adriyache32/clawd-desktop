@@ -87,11 +87,18 @@ recommend() {
 model_id() { case "$1" in 0.5b) echo qwen2.5:0.5b;; 1.5b) echo qwen2.5:1.5b;; 2b) echo qwen2.5:3b;; 3b) echo gemma3:4b;; 4b) echo qwen2.5:7b;; esac; }
 
 MODELS=(
-  "0.5b · ~0.4 GB RAM · mínimo"
-  "1.5b · ~1.0 GB RAM · equilibrado"
-  "2b   · ~2.0 GB RAM · buena calidad"
-  "3b   · ~3.3 GB RAM · más listo"
-  "4b   · ~4.7 GB RAM · el más capaz"
+  "qwen2.5:0.5b · ~0.4 GB · mínimo"
+  "qwen2.5:1.5b · ~1.0 GB · equilibrado"
+  "qwen3:1.7b   · ~1.4 GB · nuevo y liviano"
+  "qwen2.5:3b   · ~2.0 GB · buena calidad"
+  "qwen3:4b     · ~2.7 GB · moderno"
+  "gemma3:4b    · ~3.3 GB · multimodal"
+  "llama3.1:8b  · ~4.7 GB · generalista"
+  "deepseek-r1:8b · ~5.0 GB · razona"
+  "qwen3:8b     · ~5.2 GB · de los mejores"
+  "gemma3:12b   · ~8.1 GB · muy capaz"
+  "phi4:14b     · ~9.1 GB · denso y listo"
+  "qwen3:14b    · ~9.3 GB · el más completo"
   "Otro · escribir el nombre"
 )
 
@@ -102,15 +109,12 @@ choose_model() {
   local pick
   pick=$(menu "Elige el modelo (tamaño · RAM · calidad):" "${MODELS[@]}") || return
   local id
-  case "$pick" in
-    0.5b*) id=qwen2.5:0.5b ;;
-    1.5b*) id=qwen2.5:1.5b ;;
-    2b*)   id=qwen2.5:3b ;;
-    3b*)   id=gemma3:4b ;;
-    4b*)   id=qwen2.5:7b ;;
-    Otro*) id=$(ask "Nombre del modelo en Ollama (ej: llama3.2:3b):" "qwen2.5:1.5b") ;;
-    *) return ;;
-  esac
+  if [[ "$pick" == Otro* ]]; then
+    id=$(ask "Nombre del modelo en Ollama (ej: qwen3:8b):" "qwen2.5:1.5b")
+  else
+    id="${pick%% *}"   # el id es lo que va antes del primer espacio
+  fi
+  [ -z "$id" ] && return
   have_ollama || { info "Necesitas Ollama para descargar modelos."; return; }
   spin "Descargando $id…" ollama pull "$id" && {
     save_model "$id"; pause_ok "Modelo $id listo."; }

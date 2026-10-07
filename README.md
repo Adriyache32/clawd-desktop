@@ -24,13 +24,22 @@ El instalador la calcula sola:
 
 | RAM total | Modelo sugerido | RAM en uso |
 |---|---|---|
-| RAM típica | Modelo | RAM en uso | Inteligencia |
-|---|---|---|---|
-| menos de 6 GB | `qwen2.5:0.5b` | ~0.4 GB | ★☆☆☆☆ muy básico |
-| 6–12 GB | `qwen2.5:1.5b` | ~1.0 GB | ★★☆☆☆ básico |
-| 12–20 GB | `qwen2.5:3b` | ~2.0 GB | ★★★☆☆ aceptable |
-| más de 20 GB | `gemma3:4b` | ~3.3 GB | ★★★★☆ bueno |
-| equipo potente | `qwen2.5:7b` | ~4.7 GB | ★★★★★ muy bueno |
+| Modelo | RAM en uso | Inteligencia |
+|---|---|---|
+| `qwen2.5:0.5b` | ~0.4 GB | ★☆☆☆☆ muy básico |
+| `qwen2.5:1.5b` | ~1.0 GB | ★★☆☆☆ básico |
+| `qwen3:1.7b` | ~1.4 GB | ★★☆☆☆ básico |
+| `qwen2.5:3b` | ~2.0 GB | ★★★☆☆ aceptable |
+| `qwen3:4b` | ~2.7 GB | ★★★☆☆ aceptable |
+| `gemma3:4b` | ~3.3 GB | ★★★☆☆ multimodal |
+| `llama3.1:8b` | ~4.7 GB | ★★★★☆ bueno |
+| `deepseek-r1:8b` | ~5.0 GB | ★★★★☆ razona paso a paso |
+| `qwen3:8b` | ~5.2 GB | ★★★★☆ de los mejores |
+| `gemma3:12b` | ~8.1 GB | ★★★★★ muy capaz |
+| `phi4:14b` | ~9.1 GB | ★★★★★ denso y listo |
+| `qwen3:14b` | ~9.3 GB | ★★★★★ el más completo |
+
+Cualquier otro modelo de Ollama también sirve: elige "Otro" y escribe su nombre.
 
 > El modelo **no se queda en RAM**: Ollama lo descarga 30 s después de la última respuesta.
 
