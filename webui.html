@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Clawd · instalador</title>
+<style>
+  :root{--o:#d97757;--o2:#e9a184;--bg:#111214;--card:#1b1d21;--line:#2a2d33;--txt:#e8e8ea;--mut:#9aa0aa;}
+  *{box-sizing:border-box}
+  body{margin:0;background:radial-gradient(1200px 600px at 80% -10%,#2a1c17,transparent),var(--bg);color:var(--txt);
+       font:16px/1.5 system-ui,'Segoe UI',DejaVu Sans,sans-serif;min-height:100vh}
+  .wrap{max-width:940px;margin:0 auto;padding:40px 22px 80px}
+  header{display:flex;align-items:center;gap:22px;margin-bottom:8px}
+  header img{width:120px;filter:drop-shadow(0 8px 24px rgba(217,119,87,.35))}
+  h1{margin:0;font-size:34px;color:var(--o);letter-spacing:-.5px}
+  header p{margin:4px 0 0;color:var(--mut)}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin:26px 0}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px}
+  .card h3{margin:0 0 6px;font-size:13px;color:var(--mut);text-transform:uppercase;letter-spacing:.08em}
+  .card .v{font-size:20px;font-weight:700}
+  .ok{color:#5fd38a}.bad{color:#e06c6c}
+  h2{margin:34px 0 12px;font-size:19px}
+  .models{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+  .m{background:var(--card);border:2px solid var(--line);border-radius:14px;padding:14px;cursor:pointer;transition:.15s}
+  .m:hover{border-color:#3a3f47;transform:translateY(-2px)}
+  .m.sel{border-color:var(--o);box-shadow:0 0 0 3px rgba(217,119,87,.18)}
+  .m .n{font-weight:700}
+  .m .r{color:var(--mut);font-size:13px;margin-top:4px}
+  .m .rec{display:inline-block;background:var(--o);color:#111;font-size:11px;font-weight:800;border-radius:999px;padding:1px 8px;margin-top:8px}
+  .row{display:flex;flex-wrap:wrap;gap:12px;margin-top:16px}
+  button{background:var(--card);color:var(--txt);border:1px solid var(--line);border-radius:12px;padding:12px 18px;font-size:15px;
+         cursor:pointer;font-weight:600;transition:.15s}
+  button:hover{border-color:var(--o);color:var(--o2)}
+  button.primary{background:var(--o);color:#141414;border-color:var(--o)}
+  button.primary:hover{background:var(--o2);color:#141414}
+  button.danger:hover{border-color:#e06c6c;color:#e06c6c}
+  #log{margin-top:20px;background:#0c0d0f;border:1px solid var(--line);border-radius:12px;padding:14px;
+       font:13px/1.6 ui-monospace,Menlo,monospace;color:#c9cdd4;white-space:pre-wrap;min-height:48px;max-height:260px;overflow:auto}
+  .sp{display:inline-block;width:14px;height:14px;border:2px solid var(--o);border-top-color:transparent;border-radius:50%;
+      animation:s .7s linear infinite;vertical-align:-2px;margin-right:8px}
+  @keyframes s{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <img src="/clawd.png" alt="Clawd">
+    <div>
+      <h1>Clawd</h1>
+      <p>Instalador · mascota de escritorio de Claude Code</p>
+    </div>
+  </header>
+
+  <div class="grid" id="status"></div>
+
+  <h2>1 · Preparar el sistema</h2>
+  <div class="row">
+    <button class="primary" onclick="go('deps')">Instalar dependencias</button>
+    <button onclick="go('ollama')">Instalar Ollama</button>
+  </div>
+
+  <h2>2 · Elige el cerebro (modelo local)</h2>
+  <p style="color:var(--mut);margin:0 0 12px">Se descarga solo mientras chateas; Ollama lo libera a los 30 s.</p>
+  <div class="models" id="models"></div>
+  <div class="row"><button class="primary" onclick="go('pull',{model:sel})">Descargar modelo</button></div>
+
+  <h2>3 · Instalar y arrancar</h2>
+  <div class="row">
+    <button class="primary" onclick="go('install',{model:sel}).then(()=>go('start'))">Instalar Clawd</button>
+    <button onclick="go('start')">Arrancar</button>
+    <button onclick="go('stop')">Detener</button>
+    <button class="danger" onclick="if(confirm('¿Desinstalar Clawd?'))go('uninstall')">Desinstalar</button>
+  </div>
+
+  <div id="log">Listo. Elige un paso…</div>
+</div>
+
+<script>
+const MODELS=[["qwen2.5:0.5b","~0.4 GB","mínimo"],["qwen2.5:1.5b","~1.0 GB","equilibrado"],
+  ["qwen2.5:3b","~2.0 GB","buena calidad"],["gemma3:4b","~3.3 GB","más listo"],["qwen2.5:7b","~4.7 GB","el más capaz"]];
+let sel="qwen2.5:1.5b", st={};
+const log=(m)=>{document.getElementById('log').textContent=m;};
+const busy=(m)=>{document.getElementById('log').innerHTML='<span class="sp"></span>'+m;};
+
+async function refresh(){
+  st=await (await fetch('/api/status')).json();
+  sel=st.models.includes(sel)?sel:st.recommend;
+  document.getElementById('status').innerHTML=`
+    <div class="card"><h3>RAM del equipo</h3><div class="v">${st.ram} GB</div></div>
+    <div class="card"><h3>Dependencias</h3><div class="v ${st.deps_ok?'ok':'bad'}">${st.deps_ok?'OK':'faltan'}</div></div>
+    <div class="card"><h3>Ollama</h3><div class="v ${st.ollama?'ok':'bad'}">${st.ollama?'instalado':'no'}</div></div>
+    <div class="card"><h3>Clawd</h3><div class="v ${st.service==='active'?'ok':''}">${st.service}</div></div>`;
+  document.getElementById('models').innerHTML=MODELS.map(([id,ram,q])=>{
+    const rec=id===st.recommend?'<div class="rec">recomendado</div>':'';
+    const has=st.models.includes(id)?' ✓':'';
+    return `<div class="m ${id===sel?'sel':''}" onclick="pick('${id}')"><div class="n">${id}${has}</div>
+            <div class="r">${ram} RAM · ${q}</div>${rec}</div>`;
+  }).join('');
+}
+function pick(id){sel=id;refresh();}
+
+async function go(action,body={}){
+  busy('Ejecutando '+action+'…');
+  try{
+    const r=await (await fetch('/api/'+action,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})).json();
+    log('✔ '+r.message);
+  }catch(e){log('✖ '+e);}
+  await refresh();
+}
+refresh();
+</script>
+</body>
+</html>

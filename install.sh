@@ -197,13 +197,15 @@ main() {
     title "Clawd · mascota de escritorio de Claude Code"
     local choice
     choice=$(menu "¿Qué quieres hacer?" \
-      "Instalar (recomendado)" \
+      "Instalador web (bonito, se abre en el navegador)" \
+      "Instalar por consola" \
       "Elegir modelo" \
       "Comprobar dependencias" \
       "Ver estado" \
       "Desinstalar" \
       "Salir") || exit 0
     case "$choice" in
+      "Instalador web"*) python3 "$SRC_DIR/webui.py" ;;
       Instalar*)  do_install ;;
       Elegir*)    choose_model ;;
       Comprobar*) have_deps && pause_ok "Dependencias OK." || install_deps ;;
