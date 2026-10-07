@@ -32,7 +32,20 @@ El instalador la calcula sola:
 | más de 20 GB | `gemma3:4b` | ~3.3 GB | ★★★★☆ bueno |
 | equipo potente | `qwen2.5:7b` | ~4.7 GB | ★★★★★ muy bueno |
 
-> El modelo **no se queda en RAM**: Ollama lo descarga 30 s después de la última respuesta, así que puedes jugar o trabajar sin que ocupe memoria.
+> El modelo **no se queda en RAM**: Ollama lo descarga 30 s después de la última respuesta.
+
+### 🛡️ Regulador de RAM (automático)
+
+Aunque elijas un modelo grande, **Clawd cuida tu RAM** mirando la memoria libre antes de cada respuesta:
+
+| RAM libre | Qué hace |
+|---|---|
+| más de 3 GB | usa tu modelo elegido, contexto 2048, lo libera a los 30 s |
+| 1.6–3 GB | baja a un modelo más chico, contexto 1024, libera a los 10 s |
+| 0.7–1.6 GB | usa el más pequeño (0.5b), contexto 512, libera al instante |
+| menos de 0.7 GB | no carga ningún modelo (modo ahorro) |
+
+Te avisa en la burbuja cuando entra en modo ahorro, así nunca te sorprende.
 
 ## Dependencias
 
