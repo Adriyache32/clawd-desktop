@@ -100,6 +100,8 @@ MODELS=(
   "phi4:14b     · ~9.1 GB · denso y listo"
   "qwen3:14b    · ~9.3 GB · el más completo"
   "kimi-k3:cloud · nube · Kimi K3 (requiere cuenta Ollama)"
+  "nvidia/nemotron-3-ultra-550b-a55b · nube · Nemotron 3 Ultra (NVIDIA)"
+  "nvidia/nemotron-3-super-120b-a12b · nube · Nemotron 3 Super (NVIDIA)"
   "Otro · escribir el nombre"
 )
 

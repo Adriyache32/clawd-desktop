@@ -63,7 +63,7 @@
   </div>
 
   <h2>2 · Elige el cerebro (modelo local)</h2>
-  <p style="color:var(--mut);margin:0 0 12px">Se descarga solo mientras chateas. <b style="color:var(--o)">🛡️ Regulador de RAM:</b> si eliges un modelo grande pero tu RAM está baja, Clawd usa uno más chico, recorta el contexto y lo libera antes. Nunca se queda sin memoria.</p>
+  <p style="color:var(--mut);margin:0 0 12px">Los modelos de nube (NVIDIA, Kimi) no gastan tu RAM. Los locales se descargan solo mientras chateas. <b style="color:var(--o)">🛡️ Regulador de RAM:</b> si eliges un modelo grande pero tu RAM está baja, Clawd usa uno más chico, recorta el contexto y lo libera antes. Nunca se queda sin memoria.</p>
   <div class="models" id="models"></div>
   <div class="row"><button class="primary" onclick="go('pull',{model:sel})">Descargar modelo</button></div>
 
@@ -92,7 +92,9 @@ const MODELS=[
   ["gemma3:12b","~8.1 GB","muy capaz",5,"muy bueno"],
   ["phi4:14b","~9.1 GB","denso y listo",5,"muy bueno"],
   ["qwen3:14b","~9.3 GB","el más completo",5,"muy bueno"],
-  ["kimi-k3:cloud","nube","Kimi K3 en la nube",5,"el más potente · requiere cuenta Ollama"]];
+  ["kimi-k3:cloud","nube","Kimi K3 en la nube",5,"requiere cuenta Ollama"],
+  ["nvidia/nemotron-3-ultra-550b-a55b","nube","Nemotron 3 Ultra",5,"NVIDIA · el más potente"],
+  ["nvidia/nemotron-3-super-120b-a12b","nube","Nemotron 3 Super",5,"NVIDIA · muy capaz"]];
 let sel="qwen2.5:1.5b", st={};
 const log=(m)=>{document.getElementById('log').textContent=m;};
 const busy=(m)=>{document.getElementById('log').innerHTML='<span class="sp"></span>'+m;};

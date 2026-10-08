@@ -39,6 +39,12 @@ El instalador la calcula sola:
 | `phi4:14b` | ~9.1 GB | ★★★★★ denso y listo |
 | `qwen3:14b` | ~9.3 GB | ★★★★★ el más completo |
 | `kimi-k3:cloud` | nube | ★★★★★ Kimi K3 (remoto, requiere `ollama signin`) |
+| `nvidia/nemotron-3-ultra-550b-a55b` | nube | ★★★★★ Nemotron 3 Ultra (NVIDIA API) |
+| `nvidia/nemotron-3-super-120b-a12b` | nube | ★★★★★ Nemotron 3 Super (NVIDIA API) |
+
+### Backend NVIDIA (nube)
+
+Para los Nemotron, guarda tu clave en `~/.config/clawd/nvidia.key` (permisos 600) o define `MASCOT_NVIDIA_KEY`. La mascota la lee sola y llama a `integrate.api.nvidia.com`. No consume tu RAM.
 
 Cualquier otro modelo de Ollama también sirve: elige "Otro" y escribe su nombre.
 
