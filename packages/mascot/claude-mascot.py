@@ -33,6 +33,9 @@ OLLAMA = os.environ.get("MASCOT_OLLAMA", "http://localhost:11434")
 OLLAMA_MODEL = os.environ.get("MASCOT_OLLAMA_MODEL", "qwen2.5:1.5b")
 ORANGE = (0.851, 0.467, 0.341)
 TTS = os.environ.get("MASCOT_TTS", "auto")
+ELEVEN_KEY_FILE = HOME / ".config" / "clawd" / "eleven.key"
+ELEVEN_VOICE = os.environ.get("MASCOT_ELEVEN_VOICE", "21m00Tcm4TlvDq8ikWAM")
+ELEVEN_MODEL = os.environ.get("MASCOT_ELEVEN_MODEL", "eleven_multilingual_v2")
 NVIDIA_URL = "https://integrate.api.nvidia.com/v1/chat/completions"
 NVIDIA_KEY_FILE = HOME / ".config" / "clawd" / "nvidia.key"
 API = os.environ.get("MASCOT_API", "auto")  # auto|ollama|nvidia
@@ -296,11 +299,49 @@ def local_command(text: str) -> str | None:
     return None
 
 
+def eleven_key() -> str:
+    key = os.environ.get("MASCOT_ELEVEN_KEY", "").strip()
+    if not key and ELEVEN_KEY_FILE.exists():
+        key = ELEVEN_KEY_FILE.read_text().strip()
+    return key
+
+
+def eleven_say(text: str) -> bool:
+    """Voz de nube de ElevenLabs. Devuelve False si no hay clave o falla."""
+    key = eleven_key()
+    if not key:
+        return False
+    url = f"https://api.elevenlabs.io/v1/text-to-speech/{ELEVEN_VOICE}"
+    body = json.dumps({"text": text, "model_id": ELEVEN_MODEL,
+                       "voice_settings": {"stability": 0.5, "similarity_boost": 0.75}}).encode()
+    req = urllib.request.Request(url, data=body, headers={
+        "xi-api-key": key, "Content-Type": "application/json", "Accept": "audio/mpeg"})
+    try:
+        with urllib.request.urlopen(req, timeout=60) as r:
+            audio = r.read()
+    except Exception:  # noqa: BLE001
+        return False
+    tmp = Path(os.environ.get("XDG_RUNTIME_DIR", "/tmp")) / f"clawd-{os.getpid()}.mp3"
+    tmp.write_bytes(audio)
+    for player in (["mpv", "--no-video", "--really-quiet"],
+                   ["ffplay", "-nodisp", "-autoexit", "-loglevel", "quiet"],
+                   ["mpg123", "-q"]):
+        if shutil.which(player[0]):
+            subprocess.run([*player, str(tmp)], timeout=60,
+                           stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            break
+    tmp.unlink(missing_ok=True)
+    return True
+
+
 def _say_worker(text: str) -> None:
     text = re.sub(r"[^\w\sáéíóúñ¡!¿?.,:;-]", "", text)[:220].strip()
     if not text:
         return
     try:
+        if TTS == "eleven" or (TTS == "auto" and eleven_key()):
+            if eleven_say(text):
+                return
         if TTS in ("auto", "pocket") and importlib.util.find_spec("pocket_tts"):
             subprocess.run(["python3", "-c",
                             "import pocket_tts,sys; t=pocket_tts.PocketTTS(); t.load_voice('es_ES'); t.speak(sys.argv[1])", text],

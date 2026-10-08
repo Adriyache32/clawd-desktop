@@ -10,7 +10,7 @@ La mascota de escritorio: un solo archivo Python que dibuja a Clawd (pixel-art o
 - Reacciona al cursor (acariciar/mover/soltar).
 - Habla con **Ollama** (local), **NVIDIA** o **Ollama Cloud**.
 - **Regulador de RAM**: adapta modelo, contexto y `keep_alive` a la memoria libre.
-- Voz opcional: **Piper** (natural, por defecto si está), espeak-ng (robótica) o Pocket-TTS.
+- Voz: **ElevenLabs** (nube, si hay clave) → **Piper** (natural, offline) → espeak-ng (respaldo).
 
 ## Requisitos
 
@@ -24,6 +24,6 @@ python3 claude-mascot.py
 ```
 
 Variables: `MASCOT_OLLAMA_MODEL`, `MASCOT_API=ollama|nvidia|auto`, `MASCOT_OLLAMA`,
-`MASCOT_NVIDIA_KEY` (o `~/.config/clawd/nvidia.key`), `MASCOT_TTS`, `MASCOT_VOICE`.
+`MASCOT_NVIDIA_KEY` (o `~/.config/clawd/nvidia.key`), `MASCOT_TTS=auto|eleven|piper|pocket|espeak|off`, `MASCOT_ELEVEN_KEY`, `MASCOT_ELEVEN_VOICE`, `MASCOT_PIPER_VOICE`.
 
 La instalación y el servicio systemd los maneja el paquete **`suite`**.

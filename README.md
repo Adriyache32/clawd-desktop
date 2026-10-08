@@ -147,11 +147,16 @@ Clawd puede **hablar** lo que responde. Backends, en orden de calidad (Piper es 
 
 | Backend | Peso | Calidad | Notas |
 |---|---|---|---|
-| **Piper** | ~180 MB (onnxruntime + voz) | **natural** | recomendado; `MASCOT_TTS=piper` |
+| **ElevenLabs** | nube (API) | **la mejor** | requiere clave; `MASCOT_TTS=eleven` |
+| **Piper** | ~180 MB (onnxruntime + voz) | natural | recomendado offline; `MASCOT_TTS=piper` |
 | espeak-ng | 0 (ya instalado) | robótica | respaldo sin instalar nada |
 | **Pocket-TTS** | ~2 GB (arrastra PyTorch) | muy buena + clona voz | `pip install "pocket-tts[audio]"` |
 
-Se autodetecta: si `pocket_tts` o `piper` están instalados los usa; si no, cae a `espeak-ng`. Controla con `MASCOT_TTS=auto|espeak|piper|pocket|off`. Comandos en la mascota: `calla` y `habla`.
+Se autodetecta: **ElevenLabs** si hay clave (la mejor, nube), si no **Piper** (natural, offline), si no `espeak-ng` (robótica).
+
+### ElevenLabs (opcional, la mejor voz)
+
+Guarda tu clave en `~/.config/clawd/eleven.key` (permisos 600) o define `MASCOT_ELEVEN_KEY`. Ajusta la voz con `MASCOT_ELEVEN_VOICE` (id de voz) y el modelo con `MASCOT_ELEVEN_MODEL` (por defecto `eleven_multilingual_v2`, habla español). Si falla o no hay clave, cae a Piper sin que se note. Controla con `MASCOT_TTS=auto|espeak|piper|pocket|off`. Comandos en la mascota: `calla` y `habla`.
 
 ## Cómo está hecho
 
