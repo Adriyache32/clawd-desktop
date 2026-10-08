@@ -117,7 +117,7 @@ def pull(model: str) -> str:
     return f"Modelo {model} listo." if rc == 0 else f"Falló: {out.strip()[:300]}"
 
 
-def install_files(model: str) -> str:
+def install_files(model: str, api: str = "ollama") -> str:
     APP.parent.mkdir(parents=True, exist_ok=True)
     UNIT.parent.mkdir(parents=True, exist_ok=True)
     AUTOSTART.parent.mkdir(parents=True, exist_ok=True)
@@ -132,6 +132,7 @@ PartOf=graphical-session.target
 Type=simple
 ExecStart=/usr/bin/python3 {APP}
 Environment=MASCOT_OLLAMA_MODEL={model}
+Environment=MASCOT_API={api}
 PassEnvironment=DISPLAY XAUTHORITY
 Restart=on-failure
 RestartSec=3
@@ -179,7 +180,7 @@ def act(action: str, body: dict) -> str:
     if action == "pull":
         return pull(body.get("model", recommend()))
     if action == "install":
-        return install_files(body.get("model", recommend()))
+        return install_files(body.get("model", recommend()), body.get("api", "ollama"))
     if action == "start":
         return start_app()
     if action == "stop":

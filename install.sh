@@ -102,6 +102,16 @@ MODELS=(
   "kimi-k3:cloud · nube · Kimi K3 (requiere cuenta Ollama)"
   "nvidia/nemotron-3-ultra-550b-a55b · nube · Nemotron 3 Ultra (NVIDIA)"
   "nvidia/nemotron-3-super-120b-a12b · nube · Nemotron 3 Super (NVIDIA)"
+  "deepseek-ai/deepseek-v4.1-flash · nube · DeepSeek V4.1 Flash (NVIDIA)"
+  "z-ai/glm-5.3 · nube · GLM-5.3 (NVIDIA)"
+  "z-ai/glm-5.3-flash · nube · GLM-5.3 Flash (NVIDIA)"
+  "moonshotai/kimi-k3 · nube · Kimi K3 (NVIDIA)"
+  "openai/gpt-oss-20b · nube · GPT-OSS 20B (NVIDIA)"
+  "google/gemma-4-31b-it · nube · Gemma 4 31B (NVIDIA)"
+  "meta/llama-3.2-90b-vision-instruct · nube · Llama 3.2 90B Vision (NVIDIA)"
+  "mistralai/mistral-large-2-instruct · nube · Mistral Large 2 (NVIDIA)"
+  "nvidia/nemotron-3.5-lightning-30b-a3b · nube · Nemotron 3.5 Lightning (NVIDIA)"
+  "writer/palmyra-creative-122b · nube · Palmyra Creative (NVIDIA)"
   "Otro · escribir el nombre"
 )
 
@@ -118,15 +128,19 @@ choose_model() {
     id="${pick%% *}"   # el id es lo que va antes del primer espacio
   fi
   [ -z "$id" ] && return
+  local api="ollama"; [[ "$id" == *"/"* ]] && api="nvidia"
+  if [ "$api" = "nvidia" ]; then info "Modelo de nube: no se descarga, se usa con tu clave de NVIDIA."; save_model "$id" "$api"; return; fi
   have_ollama || { info "Necesitas Ollama para descargar modelos."; return; }
   spin "Descargando $id…" ollama pull "$id" && {
-    save_model "$id"; pause_ok "Modelo $id listo."; }
+    save_model "$id" "$api"; pause_ok "Modelo $id listo."; }
 }
 
 save_model() {
   [ -f "$UNIT" ] || return
   sed -i "/^Environment=MASCOT_OLLAMA_MODEL/d" "$UNIT"
+  sed -i "/^Environment=MASCOT_API/d" "$UNIT"
   sed -i "/^ExecStart=/a Environment=MASCOT_OLLAMA_MODEL=$1" "$UNIT"
+  sed -i "/^ExecStart=/a Environment=MASCOT_API=${2:-ollama}" "$UNIT"
   systemctl --user daemon-reload 2>/dev/null || true
 }
 

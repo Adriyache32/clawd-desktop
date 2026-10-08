@@ -7,38 +7,37 @@
 <style>
   :root{--o:#d97757;--o2:#e9a184;--bg:#111214;--card:#1b1d21;--line:#2a2d33;--txt:#e8e8ea;--mut:#9aa0aa;}
   *{box-sizing:border-box}
-  body{margin:0;background:radial-gradient(1200px 600px at 80% -10%,#2a1c17,transparent),var(--bg);color:var(--txt);
+  body{margin:0;background:radial-gradient(1100px 520px at 82% -10%,#2a1c17,transparent),var(--bg);color:var(--txt);
        font:16px/1.5 system-ui,'Segoe UI',DejaVu Sans,sans-serif;min-height:100vh}
-  .wrap{max-width:940px;margin:0 auto;padding:40px 22px 80px}
-  header{display:flex;align-items:center;gap:22px;margin-bottom:8px}
-  header img{width:120px;filter:drop-shadow(0 8px 24px rgba(217,119,87,.35))}
-  h1{margin:0;font-size:34px;color:var(--o);letter-spacing:-.5px}
-  header p{margin:4px 0 0;color:var(--mut)}
-  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin:26px 0}
-  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px}
-  .card h3{margin:0 0 6px;font-size:13px;color:var(--mut);text-transform:uppercase;letter-spacing:.08em}
-  .card .v{font-size:20px;font-weight:700}
+  .wrap{max-width:880px;margin:0 auto;padding:34px 22px 70px}
+  header{display:flex;align-items:center;gap:20px}
+  header img{width:104px;filter:drop-shadow(0 8px 22px rgba(217,119,87,.35))}
+  h1{margin:0;font-size:31px;color:var(--o);letter-spacing:-.5px}
+  header p{margin:3px 0 0;color:var(--mut)}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin:22px 0}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px}
+  .card h3{margin:0 0 4px;font-size:12px;color:var(--mut);text-transform:uppercase;letter-spacing:.08em}
+  .card .v{font-size:19px;font-weight:700}
   .ok{color:#5fd38a}.bad{color:#e06c6c}
-  h2{margin:34px 0 12px;font-size:19px}
-  .models{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
-  .m{background:var(--card);border:2px solid var(--line);border-radius:14px;padding:14px;cursor:pointer;transition:.15s}
-  .m:hover{border-color:#3a3f47;transform:translateY(-2px)}
-  .m.sel{border-color:var(--o);box-shadow:0 0 0 3px rgba(217,119,87,.18)}
-  .m .n{font-weight:700}
-  .m .r{color:var(--mut);font-size:13px;margin-top:4px}
-  .m .i{font-size:11.5px;color:var(--mut);margin-top:8px;letter-spacing:.02em}
-  .m .i b{color:var(--o);font-weight:700}
-  .m .i span{color:#787f89}
-  .m .rec{display:inline-block;background:var(--o);color:#111;font-size:11px;font-weight:800;border-radius:999px;padding:1px 8px;margin-top:8px}
-  .row{display:flex;flex-wrap:wrap;gap:12px;margin-top:16px}
-  button{background:var(--card);color:var(--txt);border:1px solid var(--line);border-radius:12px;padding:12px 18px;font-size:15px;
+  h2{margin:28px 0 10px;font-size:18px}
+  .row{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
+  button{background:var(--card);color:var(--txt);border:1px solid var(--line);border-radius:11px;padding:11px 16px;font-size:15px;
          cursor:pointer;font-weight:600;transition:.15s}
   button:hover{border-color:var(--o);color:var(--o2)}
   button.primary{background:var(--o);color:#141414;border-color:var(--o)}
   button.primary:hover{background:var(--o2);color:#141414}
   button.danger:hover{border-color:#e06c6c;color:#e06c6c}
-  #log{margin-top:20px;background:#0c0d0f;border:1px solid var(--line);border-radius:12px;padding:14px;
-       font:13px/1.6 ui-monospace,Menlo,monospace;color:#c9cdd4;white-space:pre-wrap;min-height:48px;max-height:260px;overflow:auto}
+  .tabs{display:inline-flex;background:var(--card);border:1px solid var(--line);border-radius:11px;overflow:hidden}
+  .tabs button{border:0;border-radius:0;background:transparent;padding:9px 16px}
+  .tabs button.act{background:var(--o);color:#141414}
+  select{width:100%;margin-top:10px;background:var(--card);color:var(--txt);border:1px solid var(--line);
+         border-radius:11px;padding:11px 12px;font-size:15px}
+  select:focus{outline:none;border-color:var(--o)}
+  #modelInfo{margin-top:8px;color:var(--mut);font-size:13.5px}
+  #modelInfo b{color:var(--o)}
+  .tag{display:inline-block;background:#262626;border-radius:999px;padding:1px 9px;font-size:12px;margin-left:6px}
+  #log{margin-top:18px;background:#0c0d0f;border:1px solid var(--line);border-radius:11px;padding:13px;
+       font:13px/1.6 ui-monospace,Menlo,monospace;color:#c9cdd4;white-space:pre-wrap;min-height:44px;max-height:220px;overflow:auto}
   .sp{display:inline-block;width:14px;height:14px;border:2px solid var(--o);border-top-color:transparent;border-radius:50%;
       animation:s .7s linear infinite;vertical-align:-2px;margin-right:8px}
   @keyframes s{to{transform:rotate(360deg)}}
@@ -48,10 +47,7 @@
 <div class="wrap">
   <header>
     <img src="/clawd.png" alt="Clawd">
-    <div>
-      <h1>Clawd</h1>
-      <p>Instalador · mascota de escritorio de Claude Code</p>
-    </div>
+    <div><h1>Clawd</h1><p>Instalador · mascota de escritorio de Claude Code</p></div>
   </header>
 
   <div class="grid" id="status"></div>
@@ -62,14 +58,18 @@
     <button onclick="go('ollama')">Instalar Ollama</button>
   </div>
 
-  <h2>2 · Elige el cerebro (modelo local)</h2>
-  <p style="color:var(--mut);margin:0 0 12px">Los modelos de nube (NVIDIA, Kimi) no gastan tu RAM. Los locales se descargan solo mientras chateas. <b style="color:var(--o)">🛡️ Regulador de RAM:</b> si eliges un modelo grande pero tu RAM está baja, Clawd usa uno más chico, recorta el contexto y lo libera antes. Nunca se queda sin memoria.</p>
-  <div class="models" id="models"></div>
-  <div class="row"><button class="primary" onclick="go('pull',{model:sel})">Descargar modelo</button></div>
+  <h2>2 · Elige el cerebro</h2>
+  <div class="tabs">
+    <button id="tab-local" class="act" onclick="setCat('local')">Local (Ollama)</button>
+    <button id="tab-cloud" onclick="setCat('cloud')">Nube (NVIDIA / Kimi)</button>
+  </div>
+  <select id="modelSel" onchange="onSel()"></select>
+  <div id="modelInfo"></div>
 
   <h2>3 · Instalar y arrancar</h2>
   <div class="row">
-    <button class="primary" onclick="go('install',{model:sel}).then(()=>go('start'))">Instalar Clawd</button>
+    <button class="primary" id="btnInstall">Instalar Clawd</button>
+    <button id="btnPull">Descargar modelo</button>
     <button onclick="go('start')">Arrancar</button>
     <button onclick="go('stop')">Detener</button>
     <button class="danger" onclick="if(confirm('¿Desinstalar Clawd?'))go('uninstall')">Desinstalar</button>
@@ -80,50 +80,74 @@
 
 <script>
 const MODELS=[
-  ["qwen2.5:0.5b","~0.4 GB","mínimo",1,"muy básico"],
-  ["qwen2.5:1.5b","~1.0 GB","equilibrado",2,"básico"],
-  ["qwen3:1.7b","~1.4 GB","nuevo y liviano",2,"básico"],
-  ["qwen2.5:3b","~2.0 GB","buena calidad",3,"aceptable"],
-  ["qwen3:4b","~2.7 GB","moderno",3,"aceptable"],
-  ["gemma3:4b","~3.3 GB","multimodal",3,"aceptable"],
-  ["llama3.1:8b","~4.7 GB","generalista",4,"bueno"],
-  ["deepseek-r1:8b","~5.0 GB","razona paso a paso",4,"bueno"],
-  ["qwen3:8b","~5.2 GB","de los mejores",4,"bueno"],
-  ["gemma3:12b","~8.1 GB","muy capaz",5,"muy bueno"],
-  ["phi4:14b","~9.1 GB","denso y listo",5,"muy bueno"],
-  ["qwen3:14b","~9.3 GB","el más completo",5,"muy bueno"],
-  ["kimi-k3:cloud","nube","Kimi K3 en la nube",5,"requiere cuenta Ollama"],
-  ["nvidia/nemotron-3-ultra-550b-a55b","nube","Nemotron 3 Ultra",5,"NVIDIA · el más potente"],
-  ["nvidia/nemotron-3-super-120b-a12b","nube","Nemotron 3 Super",5,"NVIDIA · muy capaz"]];
-let sel="qwen2.5:1.5b", st={};
-const log=(m)=>{document.getElementById('log').textContent=m;};
-const busy=(m)=>{document.getElementById('log').innerHTML='<span class="sp"></span>'+m;};
+ // local (Ollama)
+ ["qwen2.5:0.5b","~0.4 GB",1,"muy básico","local"],
+ ["qwen2.5:1.5b","~1.0 GB",2,"básico","local"],
+ ["qwen3:1.7b","~1.4 GB",2,"básico","local"],
+ ["qwen2.5:3b","~2.0 GB",3,"aceptable","local"],
+ ["qwen3:4b","~2.7 GB",3,"aceptable","local"],
+ ["gemma3:4b","~3.3 GB",3,"multimodal","local"],
+ ["llama3.1:8b","~4.7 GB",4,"bueno","local"],
+ ["deepseek-r1:8b","~5.0 GB",4,"razona paso a paso","local"],
+ ["qwen3:8b","~5.2 GB",4,"de los mejores","local"],
+ ["gemma3:12b","~8.1 GB",5,"muy bueno","local"],
+ ["phi4:14b","~9.1 GB",5,"muy bueno","local"],
+ ["qwen3:14b","~9.3 GB",5,"el más completo","local"],
+ // nube
+ ["kimi-k3:cloud","nube",5,"Ollama Cloud · requiere cuenta","cloud"],
+ ["deepseek-ai/deepseek-v4.1-flash","nube",5,"NVIDIA · rápido y fuerte","cloud"],
+ ["z-ai/glm-5.3","nube",5,"NVIDIA · muy capaz","cloud"],
+ ["z-ai/glm-5.3-flash","nube",4,"NVIDIA · rápido","cloud"],
+ ["moonshotai/kimi-k3","nube",5,"NVIDIA · el más potente","cloud"],
+ ["openai/gpt-oss-20b","nube",4,"NVIDIA · abierto","cloud"],
+ ["google/gemma-4-31b-it","nube",5,"NVIDIA","cloud"],
+ ["meta/llama-3.2-90b-vision-instruct","nube",5,"NVIDIA · ve imágenes","cloud"],
+ ["mistralai/mistral-large-2-instruct","nube",5,"NVIDIA","cloud"],
+ ["nvidia/nemotron-3-ultra-550b-a55b","nube",5,"NVIDIA · 550B","cloud"],
+ ["nvidia/nemotron-3-super-120b-a12b","nube",5,"NVIDIA · 120B","cloud"],
+ ["nvidia/nemotron-3.5-lightning-30b-a3b","nube",4,"NVIDIA · veloz","cloud"],
+ ["writer/palmyra-creative-122b","nube",4,"NVIDIA · creativo","cloud"]
+];
+let cat="local", sel="qwen2.5:1.5b", st={};
+const log=m=>document.getElementById('log').textContent=m;
+const busy=m=>document.getElementById('log').innerHTML='<span class="sp"></span>'+m;
+const stars=n=>'★'.repeat(n)+'☆'.repeat(5-n);
+const isNvidia=id=>id.includes('/');
+const apiOf=id=>isNvidia(id)?'nvidia':'ollama';
 
+function setCat(c){cat=c;document.getElementById('tab-local').className=c==='local'?'act':'';
+  document.getElementById('tab-cloud').className=c==='cloud'?'act':'';
+  const list=MODELS.filter(m=>m[4]===c);
+  if(!list.some(m=>m[0]===sel)) sel=list[0][0];
+  document.getElementById('modelSel').innerHTML=list.map(([id,ram,iq,lbl])=>{
+    const rec=(c==='local'&&id===st.recommend)?'  · recomendado':'';
+    return `<option value="${id}" ${id===sel?'selected':''}>${id} — ${ram}${rec}</option>`;}).join('');
+  onSel();
+}
+function onSel(){
+  sel=document.getElementById('modelSel').value;
+  const m=MODELS.find(x=>x[0]===sel)||[];
+  document.getElementById('modelInfo').innerHTML=`inteligencia <b>${stars(m[2]||3)}</b> · ${m[3]||''}`+
+    (cat==='cloud'?'<span class="tag">no gasta tu RAM</span>':'<span class="tag">se libera a los 30 s</span>');
+  document.getElementById('btnPull').style.display=cat==='cloud'?'none':'';
+}
 async function refresh(){
   st=await (await fetch('/api/status')).json();
-  sel=st.models.includes(sel)?sel:st.recommend;
+  if(cat==='local'&&!st.models.includes(sel)) sel=st.recommend;
   document.getElementById('status').innerHTML=`
     <div class="card"><h3>RAM del equipo</h3><div class="v">${st.ram} GB</div></div>
     <div class="card"><h3>Dependencias</h3><div class="v ${st.deps_ok?'ok':'bad'}">${st.deps_ok?'OK':'faltan'}</div></div>
     <div class="card"><h3>Ollama</h3><div class="v ${st.ollama?'ok':'bad'}">${st.ollama?'instalado':'no'}</div></div>
     <div class="card"><h3>Clawd</h3><div class="v ${st.service==='active'?'ok':''}">${st.service}</div></div>`;
-  document.getElementById('models').innerHTML=MODELS.map(([id,ram,q,iq,lbl])=>{
-    const rec=id===st.recommend?'<div class="rec">recomendado</div>':'';
-    const has=st.models.includes(id)?' ✓':'';
-    const stars='★'.repeat(iq)+'☆'.repeat(5-iq);
-    return `<div class="m ${id===sel?'sel':''}" onclick="pick('${id}')"><div class="n">${id}${has}</div>
-            <div class="r">${ram} RAM · ${q}</div>
-            <div class="i">inteligencia <b>${stars}</b> <span>${lbl}</span></div>${rec}</div>`;
-  }).join('');
+  setCat(cat);
+  document.getElementById('btnInstall').onclick=()=>go('install',{model:sel,api:apiOf(sel)}).then(()=>go('start'));
+  document.getElementById('btnPull').onclick=()=>apiOf(sel)==='nvidia'?log('Los modelos de nube no se descargan: se usan al instante.'):go('pull',{model:sel});
 }
-function pick(id){sel=id;refresh();}
-
 async function go(action,body={}){
   busy('Ejecutando '+action+'…');
-  try{
-    const r=await (await fetch('/api/'+action,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})).json();
-    log('✔ '+r.message);
-  }catch(e){log('✖ '+e);}
+  try{const r=await (await fetch('/api/'+action,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})).json();
+      log('✔ '+r.message);}
+  catch(e){log('✖ '+e);}
   await refresh();
 }
 refresh();
