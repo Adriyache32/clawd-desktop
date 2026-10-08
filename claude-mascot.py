@@ -155,6 +155,8 @@ def installed_models() -> list[str]:
 
 def adaptive_plan() -> tuple[str, str, int, str | None]:
     """Devuelve (modelo, keep_alive, num_ctx, aviso). Cuida la RAM libre."""
+    if OLLAMA_MODEL.endswith(":cloud"):
+        return OLLAMA_MODEL, "5m", 4096, None  # remoto: no gasta RAM local
     free = free_ram_gb()
     have = installed_models()
     chain = [OLLAMA_MODEL, "qwen2.5:1.5b", "qwen2.5:0.5b"]

@@ -38,6 +38,7 @@ El instalador la calcula sola:
 | `gemma3:12b` | ~8.1 GB | ★★★★★ muy capaz |
 | `phi4:14b` | ~9.1 GB | ★★★★★ denso y listo |
 | `qwen3:14b` | ~9.3 GB | ★★★★★ el más completo |
+| `kimi-k3:cloud` | nube | ★★★★★ Kimi K3 (remoto, requiere `ollama signin`) |
 
 Cualquier otro modelo de Ollama también sirve: elige "Otro" y escribe su nombre.
 
