@@ -10,7 +10,7 @@ La mascota de escritorio: un solo archivo Python que dibuja a Clawd (pixel-art o
 - Reacciona al cursor (acariciar/mover/soltar).
 - Habla con **Ollama** (local), **NVIDIA** o **Ollama Cloud**.
 - **Regulador de RAM**: adapta modelo, contexto y `keep_alive` a la memoria libre.
-- Voz opcional (espeak-ng / Piper / Pocket-TTS).
+- Voz opcional: **Piper** (natural, por defecto si está), espeak-ng (robótica) o Pocket-TTS.
 
 ## Requisitos
 

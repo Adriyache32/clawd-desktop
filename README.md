@@ -143,12 +143,12 @@ Interacción: **pasar el cursor** (la acaricias), **clic y arrastrar** para move
 
 ## Voz (TTS opcional)
 
-Clawd puede **hablar** lo que responde. Backends, en orden de calidad/peso:
+Clawd puede **hablar** lo que responde. Backends, en orden de calidad (Piper es el que suena bien):
 
 | Backend | Peso | Calidad | Notas |
 |---|---|---|---|
-| **espeak-ng** | 0 (ya instalado) | robótica | funciona al instante; `MASCOT_TTS=espeak` |
-| **Piper** | ~150 MB | buena, natural | `pip install piper-tts` + voz en español |
+| **Piper** | ~180 MB (onnxruntime + voz) | **natural** | recomendado; `MASCOT_TTS=piper` |
+| espeak-ng | 0 (ya instalado) | robótica | respaldo sin instalar nada |
 | **Pocket-TTS** | ~2 GB (arrastra PyTorch) | muy buena + clona voz | `pip install "pocket-tts[audio]"` |
 
 Se autodetecta: si `pocket_tts` o `piper` están instalados los usa; si no, cae a `espeak-ng`. Controla con `MASCOT_TTS=auto|espeak|piper|pocket|off`. Comandos en la mascota: `calla` y `habla`.

@@ -305,10 +305,18 @@ def _say_worker(text: str) -> None:
             subprocess.run(["python3", "-c",
                             "import pocket_tts,sys; t=pocket_tts.PocketTTS(); t.load_voice('es_ES'); t.speak(sys.argv[1])", text],
                            timeout=120, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        elif TTS in ("auto", "piper") and shutil.which("piper"):
-            voice = os.environ.get("MASCOT_PIPER_VOICE", str(HOME / ".local/share/piper/es_ES.onnx"))
-            subprocess.run(["sh", "-c", f'piper --model "{voice}" --output-raw | aplay -q -r 22050 -f S16_LE -t raw -'],
-                           input=text.encode(), timeout=60)
+        elif TTS in ("auto", "piper") and (shutil.which("piper") or (HOME / ".local/bin/piper").exists()):
+            piper = shutil.which("piper") or str(HOME / ".local/bin/piper")
+            voice = os.environ.get("MASCOT_PIPER_VOICE", str(HOME / ".local/share/piper/es_MX-ald-medium.onnx"))
+            tmp = Path(os.environ.get("XDG_RUNTIME_DIR", "/tmp")) / f"clawd-{os.getpid()}.wav"
+            subprocess.run([piper, "-m", voice, "-f", str(tmp), "--length-scale",
+                            os.environ.get("MASCOT_PIPER_SPEED", "1.0")],
+                           input=text.encode(), timeout=60,
+                           stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            if tmp.exists():
+                subprocess.run(["aplay", "-q", str(tmp)], timeout=60,
+                               stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                tmp.unlink(missing_ok=True)
         elif TTS != "off" and shutil.which("espeak-ng"):
             subprocess.run(["espeak-ng", "-v", os.environ.get("MASCOT_VOICE", "es-419"), "-s", "170", "-p", "55", text],
                            timeout=30, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
