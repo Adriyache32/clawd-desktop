@@ -1,4 +1,14 @@
-# Clawd — mascota de escritorio de Claude Code
+# Clawd Desktop
+
+Mascota de escritorio de Claude Code + suite de instalación con modelos locales (offline) y en la nube.
+
+## Paquetes
+
+| Paquete | Qué es | Cómo se usa |
+|---|---|---|
+| [`packages/mascot`](packages/mascot) | La mascota (Python, GTK3) | `python3 packages/mascot/claude-mascot.py` |
+| [`packages/suite`](packages/suite) | Instalador de terminal + LobeChat + web UI opcional | `cd packages/suite && ./install.sh` |
+
 
 Clawd es el bicho naranja pixelado de Claude Code, pero vivo en tu escritorio: flota **sin fondo**, se sienta a teclear en una laptop cuando trabajas, duerme si no usas la PC, se pone audífonos si hay música, y te habla con un modelo **local** (Ollama). Además actúa de ayudante: abre apps, busca en el navegador y puede pasar órdenes a un agente.
 
@@ -75,7 +85,7 @@ Te avisa en la burbuja cuando entra en modo ahorro, así nunca te sorprende.
 
 ```bash
 git clone https://github.com/Adriyache32/clawd-desktop
-cd clawd-desktop
+cd clawd-desktop/packages/suite
 ./install.sh
 ```
 

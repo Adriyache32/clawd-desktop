@@ -14,6 +14,8 @@ from pathlib import Path
 
 HOME = Path.home()
 SRC = Path(__file__).resolve().parent
+MASCOT_SRC = SRC.parent / "mascot" / "claude-mascot.py"
+ROOT = SRC.parent.parent
 APP = HOME / ".local" / "bin" / "claude-mascot.py"
 UNIT = HOME / ".config" / "systemd" / "user" / "claude-mascot.service"
 AUTOSTART = HOME / ".config" / "autostart" / "claude-mascot.desktop"
@@ -121,7 +123,7 @@ def install_files(model: str, api: str = "ollama") -> str:
     APP.parent.mkdir(parents=True, exist_ok=True)
     UNIT.parent.mkdir(parents=True, exist_ok=True)
     AUTOSTART.parent.mkdir(parents=True, exist_ok=True)
-    shutil.copy2(SRC / "claude-mascot.py", APP)
+    shutil.copy2(MASCOT_SRC, APP)
     APP.chmod(0o755)
     UNIT.write_text(f"""[Unit]
 Description=Clawd - mascota de escritorio de Claude Code
@@ -208,7 +210,7 @@ class Handler(BaseHTTPRequestHandler):
         if self.path.startswith("/api/status"):
             self._send(200, json.dumps(status()).encode(), "application/json")
         elif self.path.startswith("/clawd.png"):
-            img = (SRC / "clawd-official.png").read_bytes()
+            img = (ROOT / "clawd-official.png").read_bytes()
             self._send(200, img, "image/png")
         else:
             self._send(200, PAGE.read_bytes(), "text/html; charset=utf-8")

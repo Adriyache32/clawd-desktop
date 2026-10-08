@@ -4,6 +4,7 @@ set -uo pipefail
 
 APP_NAME="Clawd"
 SRC_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+APP_SRC="$SRC_DIR/../mascot/claude-mascot.py"
 BIN_DIR="$HOME/.local/bin"
 APP="$BIN_DIR/claude-mascot.py"
 UNIT_DIR="$HOME/.config/systemd/user"
@@ -146,7 +147,7 @@ save_model() {
 
 install_files() {
   mkdir -p "$BIN_DIR" "$UNIT_DIR" "$AUTOSTART_DIR"
-  install -m 755 "$SRC_DIR/claude-mascot.py" "$APP"
+  install -m 755 "$APP_SRC" "$APP"
   local model; model=$(model_id "$(recommend)")
   cat > "$UNIT" <<EOF
 [Unit]
