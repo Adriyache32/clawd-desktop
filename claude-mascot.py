@@ -2,6 +2,7 @@
 """Clawd v3: mascota viva que reacciona al PC, habla por Ollama y actúa como Jarvis."""
 from __future__ import annotations
 
+import importlib.util
 import json
 import math
 import os
@@ -31,6 +32,7 @@ OPENCODE = HOME / ".opencode" / "bin" / "opencode"
 OLLAMA = os.environ.get("MASCOT_OLLAMA", "http://localhost:11434")
 OLLAMA_MODEL = os.environ.get("MASCOT_OLLAMA_MODEL", "qwen2.5:1.5b")
 ORANGE = (0.851, 0.467, 0.341)
+TTS = os.environ.get("MASCOT_TTS", "auto")  # auto|espeak|piper|pocket|off
 SYNC_MS = 12000
 FPS_MS = 55
 W, H = 360, 400
@@ -126,22 +128,72 @@ EJEMPLOS = [
 ]
 
 
+_installed_cache: dict = {"at": 0.0, "models": []}
+
+
+def free_ram_gb() -> float:
+    try:
+        for line in open("/proc/meminfo"):
+            if line.startswith("MemAvailable"):
+                return int(line.split()[1]) / 1048576
+    except OSError:
+        pass
+    return 8.0
+
+
+def installed_models() -> list[str]:
+    now = time.time()
+    if now - _installed_cache["at"] > 60:
+        try:
+            with urllib.request.urlopen(f"{OLLAMA}/api/tags", timeout=3) as r:
+                _installed_cache["models"] = [m["name"] for m in json.load(r).get("models", [])]
+            _installed_cache["at"] = now
+        except Exception:  # noqa: BLE001
+            pass
+    return _installed_cache["models"]
+
+
+def adaptive_plan() -> tuple[str, str, int, str | None]:
+    """Devuelve (modelo, keep_alive, num_ctx, aviso). Cuida la RAM libre."""
+    free = free_ram_gb()
+    have = installed_models()
+    chain = [OLLAMA_MODEL, "qwen2.5:1.5b", "qwen2.5:0.5b"]
+
+    def first_installed(candidates):
+        for m in candidates:
+            if m in have:
+                return m
+        return OLLAMA_MODEL
+
+    if free < 0.7:
+        return "", "0s", 0, "🛡️ RAM al límite: no cargo modelo ahora."
+    if free < 1.6:
+        return first_installed(["qwen2.5:0.5b", "qwen2.5:1.5b"]), "0s", 512, "🛡️ RAM justa: uso el modelo más chico."
+    if free < 3.0:
+        return first_installed(["qwen2.5:1.5b", "qwen2.5:0.5b"]), "10s", 1024, "🛡️ RAM moderada: reduzco el modelo y lo descargo antes."
+    return first_installed(chain), "30s", 2048, None
+
+
 def ollama_ask(prompt: str, history: list) -> str:
     messages = [{"role": "system", "content": SISTEMA}]
     for pair in EJEMPLOS:
         messages.extend(pair)
     messages.extend(history[-6:])
     messages.append({"role": "user", "content": prompt})
+    model, keep, ctx, warning = adaptive_plan()
+    if not model:
+        return warning or "(modo ahorro)"
     payload = json.dumps({
-        "model": OLLAMA_MODEL,
+        "model": model,
         "messages": messages,
-        "stream": False, "keep_alive": "30s",
-        "options": {"num_ctx": 2048, "num_predict": 100, "temperature": 0.9, "repeat_penalty": 1.2},
+        "stream": False, "keep_alive": keep,
+        "options": {"num_ctx": ctx, "num_predict": 100, "temperature": 0.9, "repeat_penalty": 1.2},
     }).encode()
     req = urllib.request.Request(f"{OLLAMA}/api/chat", data=payload, headers={"Content-Type": "application/json"})
     try:
         with urllib.request.urlopen(req, timeout=90) as r:
-            return (json.load(r).get("message", {}).get("content", "").strip() or "(nada)")[:400]
+            reply = (json.load(r).get("message", {}).get("content", "").strip() or "(nada)")[:400]
+        return f"{warning} {reply}" if warning else reply
     except Exception:  # noqa: BLE001
         return "(Ollama no responde)"
 
@@ -151,6 +203,7 @@ def agent_ask(prompt: str) -> str:
 
 
 def local_command(text: str) -> str | None:
+    global TTS
     t = text.lower().strip()
     if "abre youtube" in t or "abrir youtube" in t:
         subprocess.Popen(["waterfox-g", "https://youtube.com"], start_new_session=True,
@@ -190,9 +243,35 @@ def local_command(text: str) -> str | None:
         sh(["xflock4"]); return "Bloqueando la sesión."
     if "cuantos juegan" in t or "jugadores" in t or "server" in t:
         return mc_players()
+    if t in ("calla", "silencio", "mute", "apaga la voz") or "calla" in t:
+        os.environ["MASCOT_TTS"] = "off"; TTS = "off"
+        return "Voz apagada."
+    if t in ("habla", "enciende la voz", "desmute"):
+        os.environ["MASCOT_TTS"] = "auto"; TTS = "auto"
+        return "Voz encendida."
     if "ayuda" in t or "que puedes" in t:
         return HELP
     return None
+
+
+def _say_worker(text: str) -> None:
+    text = re.sub(r"[^\w\sáéíóúñ¡!¿?.,:;-]", "", text)[:220].strip()
+    if not text:
+        return
+    try:
+        if TTS in ("auto", "pocket") and importlib.util.find_spec("pocket_tts"):
+            subprocess.run(["python3", "-c",
+                            "import pocket_tts,sys; t=pocket_tts.PocketTTS(); t.load_voice('es_ES'); t.speak(sys.argv[1])", text],
+                           timeout=120, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        elif TTS in ("auto", "piper") and shutil.which("piper"):
+            voice = os.environ.get("MASCOT_PIPER_VOICE", str(HOME / ".local/share/piper/es_ES.onnx"))
+            subprocess.run(["sh", "-c", f'piper --model "{voice}" --output-raw | aplay -q -r 22050 -f S16_LE -t raw -'],
+                           input=text.encode(), timeout=60)
+        elif TTS != "off" and shutil.which("espeak-ng"):
+            subprocess.run(["espeak-ng", "-v", os.environ.get("MASCOT_VOICE", "es-419"), "-s", "170", "-p", "55", text],
+                           timeout=30, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    except Exception:  # noqa: BLE001
+        pass
 
 
 def wrap(text: str, width: int) -> list[str]:
@@ -401,9 +480,12 @@ class Clawd(Gtk.Window):
         self.happy_until = time.monotonic() + seconds
         self.quiet_until = time.monotonic() + seconds + 4
         self.full_text = text; self.shown = len(text); self.mode = "idle"; self.bounce = 12
+        threading.Thread(target=_say_worker, args=(text,), daemon=True).start()
 
-    def _type(self, text: str) -> None:
+    def _type(self, text: str, voice: bool = False) -> None:
         self.full_text = text; self.shown = 0; self.mode = "typing"; self.bounce = 10
+        if voice:
+            threading.Thread(target=_say_worker, args=(text,), daemon=True).start()
 
     def _on_send(self, _entry) -> None:
         prompt = self.entry.get_text().strip()
@@ -424,8 +506,9 @@ class Clawd(Gtk.Window):
         def _run():
             reply = ollama_ask(prompt, self.history)
             self.history.append({"role": "assistant", "content": reply})
-            GLib.idle_add(self._type, reply)
+            GLib.idle_add(self._type, reply, True)
         threading.Thread(target=_run, daemon=True).start()
+        # (la voz se lanza cuando llega la respuesta)
 
     def _sync(self) -> bool:
         if self.mode != "idle" or self.idle > 60000 or time.monotonic() < self.quiet_until:
