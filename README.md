@@ -90,6 +90,7 @@ Escribe en la barra de abajo:
 - `busca <tema>` o `investiga <tema>` → abre el navegador
 - `sube/baja volumen`, `captura`, `bloquea`, `cuantos juegan`, `ayuda`
 - `! <orden>` → se la pasa al **agente**, que sí puede tocar tu PC
+- Palabras como `audita`, `pentest` o `seguridad` van solas al agente con las **skills Hermes/Strix**
 
 Interacción: **pasar el cursor** (la acaricias), **clic y arrastrar** para moverla, **clic derecho** para cerrarla.
 

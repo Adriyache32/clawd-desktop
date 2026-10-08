@@ -497,9 +497,12 @@ class Clawd(Gtk.Window):
         if quick is not None:
             self.full_text = quick; self.shown = len(quick); self.mode = "idle"; self.bounce = 10
             return
-        if prompt.startswith("!") or "jarvis" in prompt.lower():
+        sec = any(k in prompt.lower() for k in ("audita", "pentest", "seguridad", "vulnerabil", "hackea"))
+        if prompt.startswith("!") or "jarvis" in prompt.lower() or sec:
             self.mode = "thinking"
-            threading.Thread(target=lambda: GLib.idle_add(self._type, agent_ask(prompt.lstrip("!"))), daemon=True).start()
+            order = (prompt.lstrip("!") if prompt.startswith("!") else
+                     f"Usa las skills de seguridad (Hermes/Strix) para: {prompt}" if sec else prompt)
+            threading.Thread(target=lambda: GLib.idle_add(self._type, agent_ask(order), True), daemon=True).start()
             return
         self.mode = "thinking"
         self.history.append({"role": "user", "content": prompt})
