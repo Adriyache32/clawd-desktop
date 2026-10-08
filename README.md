@@ -164,6 +164,10 @@ Guarda tu clave en `~/.config/clawd/eleven.key` (permisos 600) o define `MASCOT_
 - Estados: `idle`, `code` (sentado teclenado), `work`, `think`, `sleep`, `music`, `happy`.
 - Sensores: `xprintidle` (sueño), `playerctl` (audio), tiempo de inactividad de OpenCode (trabajo), RCON de Minecraft (jugadores).
 
+## Contribuidores
+
+Ver [CONTRIBUTORS.md](CONTRIBUTORS.md). Autor: **Adriyache32**. Contribución de IA: **OpenCode**.
+
 ## Licencia
 
 MIT. Clawd es un personaje de Anthropic; este proyecto es un homenaje no oficial.
