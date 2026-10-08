@@ -137,12 +137,9 @@ choose_model() {
 }
 
 save_model() {
-  [ -f "$UNIT" ] || return
-  sed -i "/^Environment=MASCOT_OLLAMA_MODEL/d" "$UNIT"
-  sed -i "/^Environment=MASCOT_API/d" "$UNIT"
-  sed -i "/^ExecStart=/a Environment=MASCOT_OLLAMA_MODEL=$1" "$UNIT"
-  sed -i "/^ExecStart=/a Environment=MASCOT_API=${2:-ollama}" "$UNIT"
-  systemctl --user daemon-reload 2>/dev/null || true
+  mkdir -p "$HOME/.config/clawd"
+  printf 'MASCOT_OLLAMA_MODEL=%s\nMASCOT_API=%s\n' "$1" "${2:-ollama}" > "$HOME/.config/clawd/profile.env"
+  systemctl --user restart claude-mascot.service 2>/dev/null || true
 }
 
 install_files() {
@@ -158,13 +155,18 @@ PartOf=graphical-session.target
 [Service]
 Type=simple
 ExecStart=/usr/bin/python3 $APP
-Environment=MASCOT_OLLAMA_MODEL=$model
+EnvironmentFile=-%h/.config/clawd/profile.env
 PassEnvironment=DISPLAY XAUTHORITY
 Restart=on-failure
 RestartSec=3
 
 [Install]
 WantedBy=default.target
+EOF
+  mkdir -p "$HOME/.config/clawd"
+  [ -f "$HOME/.config/clawd/profile.env" ] || cat > "$HOME/.config/clawd/profile.env" <<EOF
+MASCOT_OLLAMA_MODEL=$model
+MASCOT_API=ollama
 EOF
   cat > "$AUTOSTART_DIR/claude-mascot.desktop" <<EOF
 [Desktop Entry]

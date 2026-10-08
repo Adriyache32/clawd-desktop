@@ -34,9 +34,13 @@ OLLAMA_MODEL = os.environ.get("MASCOT_OLLAMA_MODEL", "qwen2.5:1.5b")
 ORANGE = (0.851, 0.467, 0.341)
 TTS = os.environ.get("MASCOT_TTS", "auto")
 NVIDIA_URL = "https://integrate.api.nvidia.com/v1/chat/completions"
-NVIDIA_KEY_FILE = HOME / ".config" / "clawd" / "nvidia.key"  # auto|espeak|piper|pocket|off
-SYNC_MS = 12000
-FPS_MS = 55
+NVIDIA_KEY_FILE = HOME / ".config" / "clawd" / "nvidia.key"
+API = os.environ.get("MASCOT_API", "auto")  # auto|ollama|nvidia
+SYNC_MS = int(os.environ.get("MASCOT_SYNC", "12000"))
+FPS_MS = int(os.environ.get("MASCOT_FPS", "55"))
+KEEP = os.environ.get("MASCOT_KEEP", "30s")
+CTX = int(os.environ.get("MASCOT_CTX", "2048"))
+RAM_GUARD = os.environ.get("MASCOT_RAM_GUARD", "on") == "on"
 W, H = 360, 400
 SLEEP_AFTER_MS = 8 * 60 * 1000
 
@@ -155,32 +159,42 @@ def installed_models() -> list[str]:
     return _installed_cache["models"]
 
 
-def nvidia_key() -> str:
-    key = os.environ.get("MASCOT_NVIDIA_KEY", "")
-    if not key and NVIDIA_KEY_FILE.exists():
-        key = NVIDIA_KEY_FILE.read_text().strip()
-    return key
+def nvidia_keys() -> list[str]:
+    env = os.environ.get("MASCOT_NVIDIA_KEY", "").strip()
+    keys = [env] if env else []
+    if NVIDIA_KEY_FILE.exists():
+        keys += [l.strip() for l in NVIDIA_KEY_FILE.read_text().splitlines() if l.strip()]
+    return keys
+
+
+def is_nvidia() -> bool:
+    return API == "nvidia" or (API == "auto" and OLLAMA_MODEL.startswith("nvidia/"))
 
 
 def nvidia_chat(messages: list) -> str:
-    key = nvidia_key()
-    if not key:
+    keys = nvidia_keys()
+    if not keys:
         return "(falta la clave de NVIDIA)"
     body = json.dumps({"model": OLLAMA_MODEL, "messages": messages,
                        "max_tokens": 256, "temperature": 0.7}).encode()
-    req = urllib.request.Request(NVIDIA_URL, data=body,
-                                 headers={"Authorization": "Bearer " + key, "Content-Type": "application/json"})
-    try:
-        with urllib.request.urlopen(req, timeout=120) as r:
-            return (json.load(r)["choices"][0]["message"]["content"].strip() or "(nada)")[:400]
-    except Exception as exc:  # noqa: BLE001
-        return f"(NVIDIA: {type(exc).__name__})"
+    last = ""
+    for key in keys:  # rota entre claves si una falla
+        req = urllib.request.Request(NVIDIA_URL, data=body,
+                                     headers={"Authorization": "Bearer " + key, "Content-Type": "application/json"})
+        try:
+            with urllib.request.urlopen(req, timeout=120) as r:
+                return (json.load(r)["choices"][0]["message"]["content"].strip() or "(nada)")[:400]
+        except Exception as exc:  # noqa: BLE001
+            last = type(exc).__name__
+    return f"(NVIDIA: {last})"
 
 
 def adaptive_plan() -> tuple[str, str, int, str | None]:
     """Devuelve (modelo, keep_alive, num_ctx, aviso). Cuida la RAM libre."""
-    if OLLAMA_MODEL.endswith(":cloud") or OLLAMA_MODEL.startswith("nvidia/"):
+    if OLLAMA_MODEL.endswith(":cloud") or is_nvidia():
         return OLLAMA_MODEL, "5m", 4096, None  # remoto: no gasta RAM local
+    if not RAM_GUARD:
+        return OLLAMA_MODEL, KEEP, CTX, None  # perfil "normal": sin recortes
     free = free_ram_gb()
     have = installed_models()
     chain = [OLLAMA_MODEL, "qwen2.5:1.5b", "qwen2.5:0.5b"]
@@ -197,7 +211,7 @@ def adaptive_plan() -> tuple[str, str, int, str | None]:
         return first_installed(["qwen2.5:0.5b", "qwen2.5:1.5b"]), "0s", 512, "🛡️ RAM justa: uso el modelo más chico."
     if free < 3.0:
         return first_installed(["qwen2.5:1.5b", "qwen2.5:0.5b"]), "10s", 1024, "🛡️ RAM moderada: reduzco el modelo y lo descargo antes."
-    return first_installed(chain), "30s", 2048, None
+    return first_installed(chain), KEEP, CTX, None
 
 
 def ollama_ask(prompt: str, history: list) -> str:
@@ -209,7 +223,7 @@ def ollama_ask(prompt: str, history: list) -> str:
     model, keep, ctx, warning = adaptive_plan()
     if not model:
         return warning or "(modo ahorro)"
-    if model.startswith("nvidia/"):
+    if is_nvidia():
         return nvidia_chat(messages)
     payload = json.dumps({
         "model": model,
