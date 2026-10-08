@@ -1,0 +1,19 @@
+{
+  "name": "@Adriyache32/clawd-profile-normal",
+  "version": "1.0.0",
+  "description": "Perfil equilibrado para Clawd Desktop.",
+  "license": "MIT",
+  "files": [
+    "preset.env",
+    "apply.sh",
+    "README.md"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Adriyache32/clawd-desktop.git",
+    "directory": "packages/normal"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  }
+}

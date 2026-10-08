@@ -1,0 +1,19 @@
+{
+  "name": "@Adriyache32/clawd-profile-optimized",
+  "version": "1.0.0",
+  "description": "Perfil optimizado (poca RAM) para Clawd Desktop.",
+  "license": "MIT",
+  "files": [
+    "preset.env",
+    "apply.sh",
+    "README.md"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Adriyache32/clawd-desktop.git",
+    "directory": "packages/optimized"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  }
+}

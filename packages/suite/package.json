@@ -1,0 +1,20 @@
+{
+  "name": "@Adriyache32/clawd-suite",
+  "version": "1.0.0",
+  "description": "Instalador de terminal + LobeChat + web UI opcional.",
+  "license": "MIT",
+  "files": [
+    "install.sh",
+    "webui.py",
+    "webui.html",
+    "README.md"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Adriyache32/clawd-desktop.git",
+    "directory": "packages/suite"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  }
+}
