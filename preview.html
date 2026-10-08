@@ -57,6 +57,19 @@
     <li><code>abre youtube</code>, <code>busca gatos</code>, volumen, captura… y <code>! orden</code> para el agente.</li>
   </ul>
 
+  <h2>Cómo se instala (todo, paso a paso)</h2>
+  <ol>
+    <li><b>Descarga el proyecto</b>
+      <pre><code>git clone https://github.com/Adriyache32/clawd-desktop
+cd clawd-desktop</code></pre></li>
+    <li><b>Ejecuta el instalador</b> (menú de terminal, funciona sin navegador)
+      <pre><code>./install.sh</code></pre>
+      Elige <b>“Instalar todo (Clawd + Ollama + LobeChat)”</b> y listo.</li>
+    <li><b>Elige el cerebro</b>: local (Ollama) para uso sin internet, o nube (NVIDIA/Kimi) si tienes clave.</li>
+    <li><b>LobeChat</b> queda en <code>http://localhost:3210</code>, ya conectado a tus modelos locales (offline).</li>
+  </ol>
+  <p style="color:#aaa">Todo el instalador es de terminal: no necesita interfaz web ni internet permanente. Solo la primera descarga de modelos/imagen necesita conexión.</p>
+
   <h2>Instalar</h2>
   <pre><code>git clone &lt;repo&gt; &amp;&amp; cd clawd-desktop &amp;&amp; ./install.sh</code></pre>
   <p style="color:#aaa">El instalador abre un menú: comprueba dependencias, detecta/instala Ollama, te recomienda modelo según tu RAM y la deja corriendo.</p>

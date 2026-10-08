@@ -71,7 +71,35 @@ Te avisa en la burbuja cuando entra en modo ahorro, así nunca te sorprende.
 - Opcionales: `xprintidle` (para dormir), `playerctl` (audífonos), ImageMagick/`import` (capturas), `xdotool` (control)
 - Opcional: **Ollama** para las respuestas (el instalador lo instala si falta)
 
-## Instalación
+## Instalación (todo, paso a paso)
+
+```bash
+git clone https://github.com/Adriyache32/clawd-desktop
+cd clawd-desktop
+./install.sh
+```
+
+El instalador es un **menú de terminal** (funciona sin navegador). La opción **“Instalar todo”** hace:
+
+1. **Dependencias** del sistema (GTK, python-gobject, etc.).
+2. **Ollama** (si falta) — cerebro local para uso **sin internet**.
+3. **Clawd** — la mascota, con servicio y autostart.
+4. **LobeChat** — interfaz de chat en `http://localhost:3210`, conectada a tus modelos locales.
+
+Solo la primera descarga (modelos, imagen de LobeChat) necesita conexión; después funciona offline.
+
+## LobeChat (interfaz de chat)
+
+Si prefieres una interfaz tipo ChatGPT pero 100% local, el instalador levanta LobeChat con Docker/Podman:
+
+```bash
+podman run -d --name lobe-chat --network host \
+  -e OLLAMA_PROXY_URL=http://127.0.0.1:11434 docker.io/lobehub/lobe-chat:latest
+```
+
+Queda en `http://localhost:3210` y usa tus modelos de Ollama sin internet.
+
+## Instalación (detalle)
 
 ```bash
 git clone <tu-repo>/clawd-desktop

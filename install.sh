@@ -178,6 +178,27 @@ EOF
   systemctl --user enable claude-mascot.service >/dev/null 2>&1 || true
 }
 
+container_engine() { for c in podman docker; do command -v "$c" >/dev/null 2>&1 && echo "$c" && return; done; }
+
+install_lobechat() {
+  local eng; eng=$(container_engine)
+  [ -z "$eng" ] && { info "Necesitas podman o docker para LobeChat."; return 1; }
+  confirm "Instalar y arrancar LobeChat (interfaz de chat, offline con Ollama)?" || return 1
+  $eng rm -f lobe-chat >/dev/null 2>&1 || true
+  spin "Descargando y arrancando LobeChat…" \
+    $eng run -d --name lobe-chat --network host \
+    -e OLLAMA_PROXY_URL=http://127.0.0.1:11434 \
+    -e OPENAI_API_KEY=sk-none \
+    docker.io/lobehub/lobe-chat:latest
+  sleep 3
+  if $eng ps --format '{{.Names}}' 2>/dev/null | grep -q lobe-chat; then
+    pause_ok "LobeChat en http://localhost:3210 (usa tus modelos locales)"
+    confirm "Abrir LobeChat en el navegador?" && (xdg-open http://localhost:3210 >/dev/null 2>&1 &)
+  else
+    info "No arrancó. Revisa: $eng logs lobe-chat"
+  fi
+}
+
 start_app() {
   systemctl --user import-environment DISPLAY XAUTHORITY 2>/dev/null || true
   systemctl --user restart claude-mascot.service >/dev/null 2>&1 || true
@@ -218,16 +239,20 @@ main() {
     title "Clawd · mascota de escritorio de Claude Code"
     local choice
     choice=$(menu "¿Qué quieres hacer?" \
-      "Instalador web (bonito, se abre en el navegador)" \
-      "Instalar por consola" \
+      "Instalar todo (Clawd + Ollama + LobeChat)" \
+      "Instalar Clawd (consola)" \
+      "Instalar LobeChat" \
+      "Instalador web (requiere navegador)" \
       "Elegir modelo" \
       "Comprobar dependencias" \
       "Ver estado" \
       "Desinstalar" \
       "Salir") || exit 0
     case "$choice" in
+      "Instalar todo"*) do_install; have_ollama && install_lobechat ;;
+      "Instalar Clawd"*) do_install ;;
+      "Instalar LobeChat"*) install_lobechat ;;
       "Instalador web"*) python3 "$SRC_DIR/webui.py" ;;
-      Instalar*)  do_install ;;
       Elegir*)    choose_model ;;
       Comprobar*) have_deps && pause_ok "Dependencias OK." || install_deps ;;
       Ver*)       show_status ;;
